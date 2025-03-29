@@ -1,0 +1,2 @@
+SSID,BSSID,Transmitter MAC,PHY Type,Channel,Frequency,Signal Strength (dBm),Noise (dBm),SNR,Source
+Wildcard SSID,62:45:b6:30:02:00,62:45:b6:30:02:00,802.11ac,149,5745 MHz,-65,,,home_5g

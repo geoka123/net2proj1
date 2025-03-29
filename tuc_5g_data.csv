@@ -1,0 +1,5 @@
+SSID,BSSID,Transmitter MAC,PHY Type,Channel,Frequency,Signal Strength (dBm),Noise (dBm),SNR,Source
+TUC,7c:57:3c:17:c7:10,7c:57:3c:17:c7:10,802.11ac,149,5745 MHz,-79,,,tuc_5g
+GUEST,7c:57:3c:17:c7:11,7c:57:3c:17:c7:11,802.11ac,149,5745 MHz,-79,,,tuc_5g
+eduroam,7c:57:3c:17:c7:12,7c:57:3c:17:c7:12,802.11ac,149,5745 MHz,-79,,,tuc_5g
+SECURE-CAST,7c:57:3c:17:c7:13,7c:57:3c:17:c7:13,802.11ac,149,5745 MHz,-79,,,tuc_5g
