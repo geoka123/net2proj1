@@ -148,6 +148,10 @@ cap_tuc = pyshark.FileCapture('/home/geoka/tuc/net2/tuc_5g.pcapng', display_filt
 cap_tuc.close()
 df_tuc = export_wifi_data_to_csv(cap_tuc, 'tuc_5g_data', 'tuc_5g')
 
+cap_home_2 = pyshark.FileCapture('/home/geoka/tuc/net2/home_2g.pcapng', display_filter="wlan.fc.type_subtype == 8")
+cap_home_2.close()
+df_home_2 = export_wifi_data_to_csv(cap_home_2, 'home_2g_data', 'home_2g')
+
 # Combine and visualize
-combined_df = pd.concat([df_home, df_tuc], ignore_index=True)
+combined_df = pd.concat([df_home, df_tuc, df_home_2], ignore_index=True)
 plot_comparisons(combined_df)
