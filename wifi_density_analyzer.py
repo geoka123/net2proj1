@@ -67,7 +67,7 @@ def plot_comparisons(df):
     # ---------- 1. SSID COUNT PER NETWORK ----------
     ssid_counts = df.groupby('Source')['SSID'].nunique()
     plt.figure(figsize=(6, 5))
-    ssid_counts.plot(kind='bar', color=['skyblue', 'salmon'])
+    ssid_counts.plot(kind='bar', color=['skyblue', 'salmon', 'lightgreen'])
     plt.title("Number of Unique SSIDs per Network")
     plt.ylabel("SSID Count")
     plt.xticks(rotation=0)
@@ -78,7 +78,7 @@ def plot_comparisons(df):
     # ---------- 2. UNIQUE PHY TYPES PER NETWORK ----------
     unique_phy_counts = df.groupby('Source')['PHY Type'].nunique()
     plt.figure(figsize=(6, 5))
-    unique_phy_counts.plot(kind='bar', color=['mediumseagreen', 'darkorange'])
+    unique_phy_counts.plot(kind='bar', color=['mediumseagreen', 'darkorange', 'cornflowerblue'])
     plt.title("Number of Unique PHY Types per Network")
     plt.ylabel("Unique PHY Types")
     plt.xticks(rotation=0)
@@ -103,15 +103,11 @@ def plot_comparisons(df):
         df_clean_signal.boxplot(column='Signal Strength (dBm)', by='Source', ax=axs[0], **boxplot_style)
         axs[0].set_title('Signal Strength per Network')
         axs[0].set_ylabel('dBm')
-        
-        # Add y-axis ticks every 1 dBm for clarity
         all_vals = df_clean_signal['Signal Strength (dBm)']
         ymin = int(np.floor(all_vals.min())) - 1
         ymax = int(np.ceil(all_vals.max())) + 1
         axs[0].set_yticks(np.arange(ymin, ymax + 1, 1))
         axs[0].grid(True, linestyle='--', alpha=0.6)
-
-        # Annotate median values
         medians = df_clean_signal.groupby('Source')['Signal Strength (dBm)'].median()
         for i, (source, median_val) in enumerate(medians.items()):
             axs[0].annotate(f"{median_val:.1f} dBm", xy=(i + 1, median_val), xytext=(0, -12),
@@ -138,8 +134,28 @@ def plot_comparisons(df):
     plt.savefig("plot_signal_noise_comparison.png", dpi=300)
     print("📊 Saved: plot_signal_noise_comparison.png")
 
+    # ---------- 4. SIGNAL STRENGTH PER SSID ----------
+    plt.figure(figsize=(10, 6))
+    df_ssid_signal = df[df['Signal Strength (dBm)'].notnull()]
+    if not df_ssid_signal.empty:
+        for source in df_ssid_signal['Source'].unique():
+            subset = df_ssid_signal[df_ssid_signal['Source'] == source]
+            plt.scatter(subset['SSID'], subset['Signal Strength (dBm)'], label=source, alpha=0.7)
+        plt.title("Signal Strength of Each SSID per Network")
+        plt.ylabel("Signal Strength (dBm)")
+        plt.xticks(rotation=45, ha='right')
+        plt.legend()
+        plt.tight_layout()
+        plt.grid(True, linestyle='--', alpha=0.6)
+
+        # Set y-axis ticks to finer granularity (e.g., 1 dBm steps)
+        ymin = int(df_ssid_signal['Signal Strength (dBm)'].min()) - 1
+        ymax = int(df_ssid_signal['Signal Strength (dBm)'].max()) + 1
+        plt.yticks(np.arange(ymin, ymax + 1, 1))
+        plt.savefig("plot_signal_strength_per_ssid.png", dpi=300)
+        print("📊 Saved: plot_signal_strength_per_ssid.png")
+
 # ------------------- MAIN -------------------
-# Load & process PCAPs
 cap_home = pyshark.FileCapture('/home/geoka/tuc/net2/home_5g.pcapng', display_filter="wlan.fc.type_subtype == 8")
 cap_home.close()
 df_home = export_wifi_data_to_csv(cap_home, 'home_5g_data', 'home_5g')
@@ -152,6 +168,5 @@ cap_home_2 = pyshark.FileCapture('/home/geoka/tuc/net2/home_2g.pcapng', display_
 cap_home_2.close()
 df_home_2 = export_wifi_data_to_csv(cap_home_2, 'home_2g_data', 'home_2g')
 
-# Combine and visualize
 combined_df = pd.concat([df_home, df_tuc, df_home_2], ignore_index=True)
 plot_comparisons(combined_df)
